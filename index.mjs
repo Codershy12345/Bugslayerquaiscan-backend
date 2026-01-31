@@ -58,16 +58,30 @@ app.get("/sync", async (req, res) => {
 
 // API: fetch blocks
 app.get("/blocks", async (req, res) => {
-  const { data } = await supabase
-    .from("blocks")
-    .select("*")
-    .order("block_number", { ascending: false })
-    .limit(10);
+  try {
+    const { data, error } = await supabase
+      .from("blocks")
+      .select("*")
+      .order("block_number", { ascending: false })
+      .limit(10);
 
-  res.json(data);
+    if (error) {
+      console.error(error);
+      return res.status(500).json({ error: "Supabase fetch failed" });
+    }
+
+    res.json(data);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Server crashed" });
+  }
 });
 
 // server start
-app.listen(5000, () => {
-  console.log("🚀 Backend running on http://localhost:5000");
+const PORT = process.env.PORT || 5000;
+
+app.listen(PORT, () => {
+  console.log(🚀 Backend running on port ${PORT});
 });
+
+
